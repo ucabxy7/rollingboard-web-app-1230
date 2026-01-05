@@ -45,5 +45,31 @@
       "description": "Every single part of your task can be managed, tracked, and shared with teammates."
     }
   },
+
+  "aboutScreen": {
+    "title": "About Project",
+    "tags": {
+      "design": "Design",
+      "api": "API",
+      "features": "Features",
+      "router": "Router",
+      "markUp": "MarkUp"
+    },
+    "aboutProjectInfo": {
+      "alex": {
+        "name": "Alex",
+        "description": "Made design, api requests, statistics, sprint game, made some typesetting and supervised the development."
+      },
+      "gabriel": {
+        "name": "Gabriel",
+        "description": "Authorization / registration module, \"Audio call\" game, statistics collection, routing, typing of studied words."
+      },
+      "marcus": {
+        "name": "Marcus",
+        "description": "Made the main page of the application, an electronic textbook, layout and adaptive."
+      }
+    },
+    "builtWith": "Built with"
+  },
   "copyright": "Copyright © 2025 The Rolling Board. All rights reserved."
 }
