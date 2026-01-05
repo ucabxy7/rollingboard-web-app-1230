@@ -14,5 +14,36 @@
     "createShareAndGetFeedbackWithCollaborativeBoardsForRapidDevelopment": "Create, share, and get feedback with collaborative boards for rapid development.",
     "createKanbanBoard": "Create kanban board"
   },
+  "productDescriptions": {
+    "universal": {
+      "flag": "Universal",
+      "title": "Build the workflow you want",
+      "description": "Manage your boards using Drag-n-Drop, create additional boards and tasks."
+    },
+    "optimized": {
+      "flag": "Optimized",
+      "title": "Everything you need in one place",
+      "description": "You can specify additional info in task description and assign users."
+    },
+    "unlimited": {
+      "flag": "Unlimited",
+      "title": "No limits for all users.",
+      "description": "Unlimited kanban boards, columns and tasks."
+    }
+  },
+  "featureDescriptions": {
+    "integrate": {
+      "title": "Integrate",
+      "description": "The ability to quickly set up and customize workflows for just about anything."
+    },
+    "collaborate": {
+      "title": "Colaborate",
+      "description": "Manage projects, organize tasks, and build team spirit—all in one place."
+    },
+    "succeed": {
+      "title": "Succeed",
+      "description": "Every single part of your task can be managed, tracked, and shared with teammates."
+    }
+  },
   "copyright": "Copyright © 2025 The Rolling Board. All rights reserved."
 }

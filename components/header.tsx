@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Logo from "@/public/assets/logo.svg";
+import Logo from "@/public/svgs/logo.svg";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { Button } from "./shared/button";
-import BurgerMenuIcon from "@/public/assets/burger-menu.svg";
+import BurgerMenuIcon from "@/public/svgs/burger-menu.svg";
 import SideDrawer from "./shared/drawer";
-import BlockIcon from "@/public/assets/block.svg";
+import BlockIcon from "@/public/svgs/block.svg";
 
 const Header = () => {
   const t = useTranslations();

@@ -1,6 +1,6 @@
 import { mergeTwClasses } from "@/utils/styles/tailwindCss";
 import React from "react";
-import Logo from "@/public/assets/logo.svg";
+import Logo from "@/public/svgs/logo.svg";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
