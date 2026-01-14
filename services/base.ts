@@ -1,4 +1,25 @@
-import { fetchAuthSession } from "aws-amplify/auth";
+import {
+  fetchAuthSession,
+  getCurrentUser,
+  fetchUserAttributes,
+} from "aws-amplify/auth";
+
+export const getAuthUser = async () => {
+  const session = await fetchAuthSession();
+
+  if (!session.tokens?.idToken) {
+    return null;
+  }
+
+  const user = await getCurrentUser();
+  const attributes = await fetchUserAttributes();
+
+  return {
+    userId: user.userId,
+    username: user.username,
+    email: attributes.email,
+  };
+};
 
 export class ApiError extends Error {
   constructor(message: string) {

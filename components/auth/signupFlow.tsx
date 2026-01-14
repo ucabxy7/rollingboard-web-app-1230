@@ -25,7 +25,7 @@ const SignupFlow = () => {
   const handleOTPSuccess = async () => {
     try {
       await autoSignIn();
-      router.push("/app");
+      router.push("/");
     } catch (error) {
       // TODO: Bugsnag notify error
       console.error(error);

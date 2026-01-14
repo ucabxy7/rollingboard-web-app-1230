@@ -14,7 +14,7 @@ const LoginFlow = () => {
   });
 
   const handleLoginSuccess = () => {
-    router.push("/app");
+    router.push("/");
   };
 
   return <LoginForm form={loginForm} onSuccess={handleLoginSuccess} />;
