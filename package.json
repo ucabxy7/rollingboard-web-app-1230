@@ -13,6 +13,9 @@
     "pre-commit": "npx lint-staged --config lint-staged.config.js && npm run type-check"
   },
   "dependencies": {
+    "@bugsnag/browser-performance": "^3.2.0",
+    "@bugsnag/js": "^8.6.0",
+    "@bugsnag/plugin-react": "^8.6.0",
     "@hookform/resolvers": "^5.2.2",
     "aws-amplify": "^6.15.9",
     "clsx": "^2.1.1",

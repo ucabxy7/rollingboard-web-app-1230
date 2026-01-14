@@ -4,6 +4,7 @@ export declare global {
       // Example type definition for an environment variable
       NEXT_PUBLIC_USER_POOL_ID: string;
       NEXT_PUBLIC_USER_POOL_CLIENT_ID: string;
+      NEXT_PUBLIC_BUGSNAG_API_KEY: string;
     }
   }
 }

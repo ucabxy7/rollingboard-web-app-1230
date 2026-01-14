@@ -3,6 +3,7 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import AwsAmpliferProvider from "@/components/providers/awsAmplifyProvider";
+import BugsnagProvider from "@/components/providers/bugsnagProvider";
 
 const openSans = Open_Sans({
   weight: ["400", "600", "700"],
@@ -23,7 +24,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${openSans.className} antialiased`}>
         <AwsAmpliferProvider />
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <BugsnagProvider>{children}</BugsnagProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
