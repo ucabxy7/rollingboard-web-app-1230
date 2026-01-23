@@ -10,7 +10,7 @@ import { UseFormReturn } from "react-hook-form";
 import Bugsnag from "@bugsnag/js";
 import useUsersStore from "@/stores/users";
 import { fetchCurrentUser } from "@/services/users";
-import { fetchAuthSession, signOut } from "aws-amplify/auth";
+import { signOut } from "aws-amplify/auth";
 
 // Zod schema for login validation
 export const loginSchema = z.object({

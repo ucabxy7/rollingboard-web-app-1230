@@ -9,35 +9,19 @@ import BurgerMenuIcon from "@/public/svgs/burger-menu.svg";
 import SideDrawer from "./shared/drawer";
 import BlockIcon from "@/public/svgs/block.svg";
 import { useRouter } from "next/navigation";
-// import { getAuthUser } from "@/services/base";
 import AuthActions from "./authActions";
 import { signOut } from "aws-amplify/auth";
 import useUsersStore from "@/stores/users";
 import { fetchCurrentUser } from "@/services/users";
-
-// type AuthUser = Awaited<ReturnType<typeof getAuthUser>>;
 
 const Header = () => {
   const t = useTranslations();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
-  // const [user, setUser] = useState<AuthUser>(null);
   const { user, setUser } = useUsersStore();
-  // const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    // const checkAuth = async () => {
-    //   try {
-    //     const currentUser = await fetchCurrentUser();
-    //     setUser(currentUser);
-    //   } catch {
-    //     setUser(null);
-    //   } finally {
-    //     setAuthChecked(true);
-    //   }
-    // };
-    // checkAuth();
     fetchCurrentUser().then(setUser);
   }, [setUser]);
 
@@ -82,11 +66,7 @@ const Header = () => {
 
         {/* ✅ Auth Area */}
         <div className="flex gap-4 items-center">
-          <AuthActions
-            user={user}
-            // authChecked={authChecked}
-            onSignedOut={() => handleSignOut()}
-          />
+          <AuthActions user={user} onSignedOut={() => handleSignOut()} />
         </div>
       </div>
       <div className="md:hidden flex justify-between items-center py-2 px-2 flex-1">
@@ -113,7 +93,6 @@ const Header = () => {
                 <li>
                   <AuthActions
                     user={user}
-                    // authChecked={authChecked}
                     variant="stack"
                     onSignedOut={handleSignOut}
                     onActionComplete={() => setIsOpen(false)}
