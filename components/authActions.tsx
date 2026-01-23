@@ -1,18 +1,21 @@
 "use client";
 
-import { signOut } from "@/services/auth";
 import { Button } from "./shared/button";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { User } from "@/models/users";
+//  in charge of 2 things
+//  before log in (sign up & sign in buttons and click route)
+//  after log in (avatar+email & sign out button and click route)
 
-type User = {
-  username: string;
-  email?: string | null;
-};
+// input parameters:
+// user - null or user object (affect elements itself: before/after log in info and shape)
+// variant - inline or stack (affect layout of all elements)
+// onsignedout - callback after sign out (if click 'sign out' button)
+// onactioncomplete - callback after 3 action (if click 'any' button, used in sidedrawer layout)
 
 type AuthActionsProps = {
   user: User | null;
-  authChecked: boolean;
 
   /**
    * Called after sign out succeeds
@@ -36,14 +39,14 @@ type AuthActionsProps = {
 
 const AuthActions = ({
   user,
-  authChecked,
+  // authChecked,
   onSignedOut,
   onActionComplete,
   variant = "inline",
 }: AuthActionsProps) => {
   const t = useTranslations();
   const router = useRouter();
-  if (!authChecked) return null;
+  // if (!authChecked) return null;
 
   /* ---------- Unauthenticated ---------- */
   if (!user) {
@@ -102,7 +105,7 @@ const AuthActions = ({
       {/* Sign out */}
       <Button
         onClick={async () => {
-          await signOut();
+          // await signOut();
           onSignedOut?.();
           onActionComplete?.();
         }}

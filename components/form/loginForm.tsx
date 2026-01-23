@@ -8,6 +8,9 @@ import { Button } from "../shared/button";
 import { signIn } from "@/services/auth";
 import { UseFormReturn } from "react-hook-form";
 import Bugsnag from "@bugsnag/js";
+import useUsersStore from "@/stores/users";
+import { fetchCurrentUser } from "@/services/users";
+import { fetchAuthSession, signOut } from "aws-amplify/auth";
 
 // Zod schema for login validation
 export const loginSchema = z.object({
@@ -38,11 +41,16 @@ const LoginForm = ({ form, onSuccess }: LoginFormProps) => {
     setError,
     clearErrors,
   } = form;
+  const { setUser } = useUsersStore();
 
   const onSubmit = async (data: LoginFormData) => {
     try {
       clearErrors("root");
+      await signOut();
+      // fetchCurrentUser needs tokens produced by signIn
       await signIn(data.email, data.password);
+      const user = await fetchCurrentUser();
+      setUser(user);
       onSuccess?.();
     } catch (error) {
       const message =

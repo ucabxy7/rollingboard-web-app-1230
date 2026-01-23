@@ -9,25 +9,43 @@ import BurgerMenuIcon from "@/public/svgs/burger-menu.svg";
 import SideDrawer from "./shared/drawer";
 import BlockIcon from "@/public/svgs/block.svg";
 import { useRouter } from "next/navigation";
-import { getAuthUser } from "@/services/base";
+// import { getAuthUser } from "@/services/base";
 import AuthActions from "./authActions";
+import { signOut } from "aws-amplify/auth";
+import useUsersStore from "@/stores/users";
+import { fetchCurrentUser } from "@/services/users";
 
-type AuthUser = Awaited<ReturnType<typeof getAuthUser>>;
+// type AuthUser = Awaited<ReturnType<typeof getAuthUser>>;
 
 const Header = () => {
   const t = useTranslations();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
-  const [user, setUser] = useState<AuthUser>(null);
-  const [authChecked, setAuthChecked] = useState(false);
+  // const [user, setUser] = useState<AuthUser>(null);
+  const { user, setUser } = useUsersStore();
+  // const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-    getAuthUser()
-      .then(setUser)
-      .catch(() => setUser(null))
-      .finally(() => setAuthChecked(true));
-  }, []);
+    // const checkAuth = async () => {
+    //   try {
+    //     const currentUser = await fetchCurrentUser();
+    //     setUser(currentUser);
+    //   } catch {
+    //     setUser(null);
+    //   } finally {
+    //     setAuthChecked(true);
+    //   }
+    // };
+    // checkAuth();
+    fetchCurrentUser().then(setUser);
+  }, [setUser]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    setUser(null);
+    router.push("/auth/login");
+  };
 
   const navigationLinks = useMemo(
     () => [
@@ -42,7 +60,7 @@ const Header = () => {
     ],
     [t],
   );
-
+  // for sideDrawer, close action:1 'x'icon 2.'sign out' 3. any link
   return (
     <header className="w-full flex justify-center items-center">
       <div className="hidden md:flex max-w-7xl flex-1 justify-between items-center py-2">
@@ -66,8 +84,8 @@ const Header = () => {
         <div className="flex gap-4 items-center">
           <AuthActions
             user={user}
-            authChecked={authChecked}
-            onSignedOut={() => setUser(null)}
+            // authChecked={authChecked}
+            onSignedOut={() => handleSignOut()}
           />
         </div>
       </div>
@@ -95,12 +113,9 @@ const Header = () => {
                 <li>
                   <AuthActions
                     user={user}
-                    authChecked={authChecked}
+                    // authChecked={authChecked}
                     variant="stack"
-                    onSignedOut={() => {
-                      setUser(null);
-                      setIsOpen(false);
-                    }}
+                    onSignedOut={handleSignOut}
                     onActionComplete={() => setIsOpen(false)}
                   />
                 </li>
