@@ -13,11 +13,14 @@ import AuthActions from "./authActions";
 import { signOut } from "aws-amplify/auth";
 import useUsersStore from "@/stores/users";
 import { fetchCurrentUser } from "@/services/users";
+import UpdateProfileDialog from "./updateProfileDialog";
+import SideDrawerContent from "./sideDrawerContext";
 
 const Header = () => {
   const t = useTranslations();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  const [isProfileDrawerOpen, setIsProfileDrawerOpen] = useState(false);
 
   const { user, setUser } = useUsersStore();
 
@@ -32,17 +35,34 @@ const Header = () => {
   };
 
   const navigationLinks = useMemo(
-    () => [
-      {
-        label: t("navigations.home"),
-        href: "/",
-      },
-      {
-        label: t("navigations.about"),
-        href: "/about",
-      },
-    ],
-    [t],
+    () =>
+      user
+        ? [
+            {
+              label: t("navigations.profile"),
+              href: `#`,
+              openDrawer: true,
+            },
+            {
+              label: t("navigations.home"),
+              href: "/",
+            },
+            {
+              label: t("navigations.about"),
+              href: "/about",
+            },
+          ]
+        : [
+            {
+              label: t("navigations.home"),
+              href: "/",
+            },
+            {
+              label: t("navigations.about"),
+              href: "/about",
+            },
+          ],
+    [t, user],
   );
   // for sideDrawer, close action:1 'x'icon 2.'sign out' 3. any link
   return (
@@ -56,19 +76,53 @@ const Header = () => {
         </div>
         <ul className="flex items-center gap-10">
           {navigationLinks.map((link) => (
-            <li key={link.href}>
-              <Link href={link.href} className={navigationLinksClasses}>
-                {link.label}
-              </Link>
+            <li key={`${link.href}-${link.label}`}>
+              {link.openDrawer ? (
+                <SideDrawer
+                  isOpen={isProfileDrawerOpen}
+                  setIsOpen={setIsProfileDrawerOpen}
+                  trigger={
+                    <p className={navigationLinksClasses}> {link.label}</p>
+                  }
+                >
+                  <div className="bg-dark-9 h-full">
+                    <SideDrawerContent />
+                  </div>
+                </SideDrawer>
+              ) : (
+                <Link href={link.href} className={navigationLinksClasses}>
+                  {link.label}
+                </Link>
+              )}
             </li>
           ))}
         </ul>
-
-        {/* ✅ Auth Area */}
-        <div className="flex gap-4 items-center">
-          <AuthActions user={user} onSignedOut={() => handleSignOut()} />
+        <div className="flex gap-4">
+          {user ? (
+            <>
+              <Button variant="ghost" onClick={handleSignOut}>
+                {t("buttons.signOut")}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                onClick={() => router.push("/auth/login")}
+              >
+                {t("buttons.signIn")}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => router.push("/auth/signup")}
+              >
+                {t("buttons.signUp")}
+              </Button>
+            </>
+          )}
         </div>
       </div>
+      {/* Mobile Header */}
       <div className="md:hidden flex justify-between items-center py-2 px-2 flex-1">
         <Logo className="size-7" />
 
@@ -89,31 +143,33 @@ const Header = () => {
               <BlockIcon className="size-6 text-whtie" />
             </button>
             <ul className="flex flex-col gap-4">
-              <>
-                <li>
-                  <AuthActions
-                    user={user}
-                    variant="stack"
-                    onSignedOut={handleSignOut}
-                    onActionComplete={() => setIsOpen(false)}
-                  />
-                </li>
-              </>
-
               {navigationLinks.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    onClick={() => setIsOpen(false)}
-                    href={link.href}
-                    className={navigationLinksClasses}
-                  >
-                    {link.label}
-                  </Link>
+                  {link.openDrawer ? (
+                    <Button
+                      className={navigationLinksClasses}
+                      onClick={() => {
+                        setIsOpen(false); // 关闭菜单
+                        setIsProfileDrawerOpen(true); // 打开 profile drawer
+                      }}
+                    >
+                      {link.label}
+                    </Button>
+                  ) : (
+                    <Link
+                      onClick={() => setIsOpen(false)}
+                      href={link.href}
+                      className={navigationLinksClasses}
+                    >
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
         </SideDrawer>
+        <UpdateProfileDialog />
       </div>
     </header>
   );

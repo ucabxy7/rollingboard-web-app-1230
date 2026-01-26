@@ -1,6 +1,7 @@
 {
   "appname": "The Rolling Board",
   "navigations": {
+    "profile":"Profile",
     "home": "Home",
     "about": "About"
   },
@@ -102,6 +103,14 @@
     "alreadyHaveAccount": "Already have an account?",
     "signIn": "Sign in",
     "createAccount": "Create an Account"
+  },
+  "sideDrawer": {
+    "id":"ID: {id}",
+    "editProfile": "Edit Profile"
+  },
+  "editProfile": {
+    "title": "Edit Profile",
+    "save": "Save"
   },
   "copyright": "Copyright © 2025 The Rolling Board. All rights reserved."
 }

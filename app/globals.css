@@ -188,6 +188,36 @@
   }
 }
 
+@layer components {
+  .drawer-header-gradient {
+    width: 600px;
+    height: 600px;
+    transform: rotate(-105.007deg);
+    border-radius: 600px;
+    background: linear-gradient(
+      180deg,
+      #ff6161 0%,
+      #43ffdd 35.88%,
+      #45bcff 67.65%,
+      #d795ff 100%
+    );
+    filter: blur(132.34390258789062px);
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

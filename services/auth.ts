@@ -1,9 +1,12 @@
+import { UpdateProfileFormData } from "@/models/users";
 import {
   signUp as CognitoSignUp,
   confirmSignUp as CognitoVerifySignUp,
   resendSignUpCode as CognitoResendSignUpCode,
   signIn as CognitoSignIn,
   signOut as CognitoSignOut,
+  updateUserAttributes,
+  fetchAuthSession,
 } from "aws-amplify/auth";
 
 const USERNAME_EXISTS_ERROR = "User already exists";
@@ -59,4 +62,21 @@ export const signIn = async (email: string, password: string) => {
 
 export const signOut = async () => {
   return await CognitoSignOut();
+};
+
+export const updateProfile = async (data: UpdateProfileFormData) => {
+  const userAttributes: Record<string, string> = {};
+  if (data.name) {
+    userAttributes.name = data.name;
+  }
+  if (data.email) {
+    userAttributes.email = data.email;
+  }
+  if (Object.keys(userAttributes).length > 0) {
+    await updateUserAttributes({ userAttributes: userAttributes });
+  }
+};
+
+export const refreshToken = async () => {
+  return await fetchAuthSession({ forceRefresh: true });
 };
