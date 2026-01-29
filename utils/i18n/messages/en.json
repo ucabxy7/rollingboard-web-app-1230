@@ -3,7 +3,8 @@
   "navigations": {
     "profile":"Profile",
     "home": "Home",
-    "about": "About"
+    "about": "About",
+    "projects": "Projects"
   },
   "buttons": {
     "signIn": "Sign In",
@@ -111,6 +112,12 @@
   "editProfile": {
     "title": "Edit Profile",
     "save": "Save"
+  },
+  "projectsScreen":{
+    "projects":"Projects",
+    "newProject":"New Project",
+    "editProject":"Edit Project",
+    "createProject":"Create Project"
   },
   "copyright": "Copyright © 2025 The Rolling Board. All rights reserved."
 }

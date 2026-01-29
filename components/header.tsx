@@ -9,7 +9,6 @@ import BurgerMenuIcon from "@/public/svgs/burger-menu.svg";
 import SideDrawer from "./shared/drawer";
 import BlockIcon from "@/public/svgs/block.svg";
 import { useRouter } from "next/navigation";
-import AuthActions from "./authActions";
 import { signOut } from "aws-amplify/auth";
 import useUsersStore from "@/stores/users";
 import { fetchCurrentUser } from "@/services/users";
@@ -42,6 +41,10 @@ const Header = () => {
               label: t("navigations.profile"),
               href: `#`,
               openDrawer: true,
+            },
+            {
+              label: t("navigations.projects"),
+              href: "/app",
             },
             {
               label: t("navigations.home"),

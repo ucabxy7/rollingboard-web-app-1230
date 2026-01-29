@@ -10,5 +10,19 @@ export const fetchCurrentUser = async () => {
   const response = await handleApiResponse<{ user: User }>(
     await fetch(url, { headers }),
   );
-  return response.user;
+  return response!.user;
+};
+export const fetchUsersByQuery = async (query: string) => {
+  const headers = await getCommonHeaders();
+
+  const url = `${API_URL}/users/search`;
+
+  const response = await handleApiResponse<{ users: User[] }>(
+    await fetch(url, {
+      headers,
+      method: "POST",
+      body: JSON.stringify({ query }),
+    }),
+  );
+  return response!.users;
 };
