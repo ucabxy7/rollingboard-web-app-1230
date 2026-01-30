@@ -114,6 +114,11 @@
     "save": "Save"
   },
   "projectsScreen":{
+    "name":"name",
+    "description":"description",
+    "createProjectButton":"Create Project",
+    "open":"open",
+    "edit":"edit",
     "projects":"Projects",
     "newProject":"New Project",
     "editProject":"Edit Project",
