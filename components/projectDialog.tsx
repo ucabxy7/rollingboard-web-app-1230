@@ -5,7 +5,7 @@ import {
   DialogBackdrop,
 } from "@headlessui/react";
 import { useTranslations } from "next-intl";
-import ProjectForm from "./form/createProjectForm";
+import ProjectForm from "@/components/form/createProjectForm";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { projectSchema, ProjectFormData, Project } from "@/models/projects";

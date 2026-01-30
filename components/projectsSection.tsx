@@ -1,11 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
-import ProjectCard from "./projectCard";
+import ProjectCard from "@/components/projectCard";
 import { useTranslations } from "next-intl";
 import { Button } from "./shared/button";
 import PlusSignIcon from "@/public/svgs/plus-sign.svg";
 import { useCallback, useEffect, useRef, useState } from "react";
-import ProjectDialog, { ProjectDialogRef } from "./projectDialog";
+import ProjectDialog, { ProjectDialogRef } from "@/components/projectDialog";
 import { Project } from "@/models/projects";
 import { deleteProject, fetchProjects } from "@/services/projects";
 import { Pagination } from "@heroui/pagination";
@@ -51,9 +51,9 @@ const ProjectsSection = () => {
     },
     [fetchAndSetProjects],
   );
-  console.log(totalPages);
-  console.log(page);
-  console.log(totalItems);
+  console.log("totalPages:", totalPages);
+  console.log("page:", page);
+  console.log("totalItems:", totalItems);
   return (
     <div className={mergeTwClasses(`${isLoading ? "opacity-0" : ""}`, "w-7xl")}>
       <div className="mb-6 flex justify-between w-full">
