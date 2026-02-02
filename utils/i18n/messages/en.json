@@ -122,7 +122,8 @@
     "projects":"Projects",
     "newProject":"New Project",
     "editProject":"Edit Project",
-    "createProject":"Create Project"
+    "createProject":"Create Project",
+    "editProjectButton":"Edit Project"
   },
   "copyright": "Copyright © 2025 The Rolling Board. All rights reserved."
 }
