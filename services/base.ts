@@ -47,5 +47,9 @@ export const handleApiResponse = async <T>(response: Response): Promise<T> => {
     throw new ApiError(error.message);
   }
 
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   return await response.json();
 };
