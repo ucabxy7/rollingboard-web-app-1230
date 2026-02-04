@@ -91,10 +91,10 @@ export const addProjectMember = async (
   return response!.memberships;
 };
 
-export const removeProjectMember = async (userId: string) => {
+export const removeProjectMember = async (membershipId: string) => {
   const headers = await getCommonHeaders();
 
-  const url = `${API_URL}/memberships/${userId}`;
+  const url = `${API_URL}/memberships/${membershipId}`;
 
   const response = await handleApiResponse<void>(
     await fetch(url, { headers, method: "DELETE" }),
