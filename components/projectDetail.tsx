@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { Button } from "./shared/button";
 import MembersDialog, { MembersDialogRef } from "@/components/membersDialog";
 import { useTranslations } from "next-intl";
+import ColumnBoard from "@/components/project/columnBoard";
 
 interface ProjectDetailProps {
   projectId: string;
@@ -26,10 +27,10 @@ const ProjectDetail = ({ projectId }: ProjectDetailProps) => {
       </div>
 
       {/* TODO: Replace with real project board/details */}
-      <p className="text-gray-6 text-medium">
+      {/* <p className="text-gray-6 text-medium">
         Project board content will go here.
-      </p>
-
+      </p> */}
+      <ColumnBoard projectId={projectId} />
       <MembersDialog ref={membersDialogRef} projectId={projectId} />
     </div>
   );
