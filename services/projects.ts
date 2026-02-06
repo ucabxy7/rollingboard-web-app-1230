@@ -1,9 +1,15 @@
 import { ProjectFormData } from "@/models/projects";
+import { ColumnFormData } from "@/models/columns";
 import { getCommonHeaders, handleApiResponse } from "./base";
 import { Project } from "@/models/projects";
 import { Pagination } from "@/models/pagination";
 import { Membership } from "@/models/memberships";
 import { Column } from "@/models/columns";
+import {
+  CreateColumnInput,
+  UpdateColumnInput,
+  ReorderColumnInput,
+} from "./dto";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -118,8 +124,7 @@ export const fetchColumns = async (projectId: string) => {
 // 2.create project column
 export const createColumn = async (
   projectId: string,
-  name: string,
-  order: number,
+  input: CreateColumnInput,
 ) => {
   const headers = await getCommonHeaders();
 
@@ -129,11 +134,30 @@ export const createColumn = async (
     await fetch(url, {
       headers,
       method: "POST",
-      body: JSON.stringify({ name, order }),
+      body: JSON.stringify(input),
     }),
   );
   return response!.column;
 };
+// 2.1 update project column (except order)
+export const updateColumn = async (
+  columnId: string,
+  input: UpdateColumnInput,
+) => {
+  const headers = await getCommonHeaders();
+
+  const url = `${API_URL}/columns/${columnId}`;
+
+  const response = await handleApiResponse<{ column: Column }>(
+    await fetch(url, {
+      headers,
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
+  );
+  return response!.column;
+};
+
 // 3.delete project column
 export const deleteColumn = async (columnId: string) => {
   const headers = await getCommonHeaders();
