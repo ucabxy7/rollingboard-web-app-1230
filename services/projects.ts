@@ -5,11 +5,8 @@ import { Project } from "@/models/projects";
 import { Pagination } from "@/models/pagination";
 import { Membership } from "@/models/memberships";
 import { Column } from "@/models/columns";
-import {
-  CreateColumnInput,
-  UpdateColumnInput,
-  ReorderColumnInput,
-} from "./dto";
+import { CreateColumnInput, UpdateColumnInput, SwapColumnInput } from "./dto";
+import { promises } from "dns";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -156,6 +153,28 @@ export const updateColumn = async (
     }),
   );
   return response!.column;
+};
+// 2.2 swap column order
+export interface SwapColumnResponse {
+  success: true;
+}
+export const swapColumn = async (
+  projectId: string,
+  input: SwapColumnInput,
+): Promise<SwapColumnResponse> => {
+  const headers = await getCommonHeaders();
+
+  const url = `${API_URL}/projects/${projectId}/columns/swap-order`;
+
+  const response = await handleApiResponse<SwapColumnResponse>(
+    await fetch(url, {
+      headers,
+      method: "PATCH",
+      body: JSON.stringify(input),
+    }),
+  );
+
+  return response!;
 };
 
 // 3.delete project column

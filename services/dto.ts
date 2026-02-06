@@ -8,7 +8,6 @@ export interface UpdateColumnInput {
   name: string;
 }
 
-export interface ReorderColumnInput {
-  id: string;
-  order: number;
+export interface SwapColumnInput {
+  ids: [string, string];
 }

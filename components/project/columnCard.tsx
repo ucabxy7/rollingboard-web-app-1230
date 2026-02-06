@@ -9,12 +9,14 @@ interface ColumnCardProps {
   column: Column;
   onDelete?: () => void;
   onEdit?: () => void;
+  dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
 export default function ColumnCard({
   column,
   onDelete,
   onEdit,
+  dragHandleProps,
 }: ColumnCardProps) {
   const t = useTranslations();
 
@@ -35,7 +37,12 @@ export default function ColumnCard({
       </button>
 
       {/* Header */}
-      <div className="mb-3 flex items-center justify-between">
+      {/* <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-white font-semibold">{column.name}</h3> */}
+      <div
+        className="mb-3 flex items-center justify-between cursor-grab active:cursor-grabbing"
+        {...dragHandleProps}
+      >
         <h3 className="text-white font-semibold">{column.name}</h3>
 
         {onEdit && (
