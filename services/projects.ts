@@ -3,6 +3,7 @@ import { getCommonHeaders, handleApiResponse } from "./base";
 import { Project } from "@/models/projects";
 import { Pagination } from "@/models/pagination";
 import { Membership } from "@/models/memberships";
+import { Column } from "@/models/columns";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -95,6 +96,49 @@ export const removeProjectMember = async (membershipId: string) => {
   const headers = await getCommonHeaders();
 
   const url = `${API_URL}/memberships/${membershipId}`;
+
+  const response = await handleApiResponse<void>(
+    await fetch(url, { headers, method: "DELETE" }),
+  );
+  return response;
+};
+
+// columns service
+// 1.fetch project columns
+export const fetchColumns = async (projectId: string) => {
+  const headers = await getCommonHeaders();
+
+  const url = `${API_URL}/projects/${projectId}/columns`;
+
+  const response = await handleApiResponse<{ columns: Column[] }>(
+    await fetch(url, { headers }),
+  );
+  return response!.columns;
+};
+// 2.create project column
+export const createColumn = async (
+  projectId: string,
+  name: string,
+  order: number,
+) => {
+  const headers = await getCommonHeaders();
+
+  const url = `${API_URL}/projects/${projectId}/column`;
+
+  const response = await handleApiResponse<{ column: Column }>(
+    await fetch(url, {
+      headers,
+      method: "POST",
+      body: JSON.stringify({ name, order }),
+    }),
+  );
+  return response!.column;
+};
+// 3.delete project column
+export const deleteColumn = async (columnId: string) => {
+  const headers = await getCommonHeaders();
+
+  const url = `${API_URL}/columns/${columnId}`;
 
   const response = await handleApiResponse<void>(
     await fetch(url, { headers, method: "DELETE" }),

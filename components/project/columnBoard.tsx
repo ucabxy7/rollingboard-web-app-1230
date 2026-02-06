@@ -1,72 +1,68 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/shared/button";
+import PlusSignIcon from "@/public/svgs/plus-sign.svg";
+import { fetchColumns, createColumn, deleteColumn } from "@/services/projects";
+import { Column } from "@/models/columns";
+import ColumnCard from "@/components/project/columnCard";
 
-type Column = {
-  id: string;
-  name: string;
-  order: number;
-  tasks: []; // manually set tasks empty for MVP
-};
-
-interface ColumnBoardProps {
+interface Props {
   projectId: string;
 }
 
-const ColumnBoard = ({ projectId }: ColumnBoardProps) => {
+export default function ColumnBoard({ projectId }: Props) {
   const [columns, setColumns] = useState<Column[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    // MVP：firstly mock column data, later fetch from API
-    const mockColumns: Column[] = [
-      { id: "1", name: "To Do", order: 0, tasks: [] },
-      { id: "2", name: "In Progress", order: 1, tasks: [] },
-      { id: "3", name: "Done", order: 2, tasks: [] },
-    ];
-
-    setColumns(mockColumns);
-    setLoading(false);
+  const fetchAndSetColumns = useCallback(async () => {
+    try {
+      const data = await fetchColumns(projectId);
+      setColumns(data);
+      setIsLoading(false);
+    } catch (e) {
+      console.error(e);
+    }
   }, [projectId]);
 
-  if (loading) {
-    return <div className="text-gray-6">Loading board...</div>;
-  }
+  useEffect(() => {
+    fetchAndSetColumns();
+  }, [fetchAndSetColumns]);
+
+  const handleCreateColumn = async () => {
+    const name = "To do";
+    const order = columns.length + 1;
+
+    await createColumn(projectId, name, order);
+    fetchAndSetColumns();
+  };
+
+  const handleDeleteColumn = async (columnId: string) => {
+    await deleteColumn(columnId);
+    fetchAndSetColumns();
+  };
+
+  if (isLoading) return null;
 
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4">
-      {columns
-        .sort((a, b) => a.order - b.order)
-        .map((column) => (
-          <div
-            key={column.id}
-            className="min-w-64 bg-gray-9 rounded-lg p-4 flex-shrink-0"
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-white font-semibold">{column.name}</h3>
-            </div>
-
-            {/* Tasks placeholder */}
-            <div className="flex flex-col gap-2 min-h-24">
-              {column.tasks.length === 0 && (
-                <div className="text-gray-6 text-sm italic">No tasks</div>
-              )}
-            </div>
-          </div>
-        ))}
-
-      {/* Add column (MVP 占位) */}
-      <div className="min-w-64 shrink-0">
-        <Button
-          variant="ghost"
-          className="h-full w-full border border-dashed border-gray-7 text-gray-6"
-        >
-          + Add column
+    <div className="w-full">
+      <div className="mb-4 flex justify-between items-center">
+        <h2 className="text-lg font-semibold text-white">Columns</h2>
+        <Button onClick={handleCreateColumn}>
+          <PlusSignIcon className="size-4 mr-2 fill-white" />
+          New Column
         </Button>
+      </div>
+
+      <div className="flex gap-4 overflow-x-auto">
+        {columns.map((column) => (
+          <ColumnCard
+            key={column.id}
+            column={column}
+            onDelete={() => handleDeleteColumn(column.id)}
+          />
+        ))}
       </div>
     </div>
   );
-};
-
-export default ColumnBoard;
+}
