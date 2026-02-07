@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useMemo, useState } from "react";
 import { Button } from "@/components/shared/button";
 import PlusSignIcon from "@/public/svgs/plus-sign.svg";
 import { fetchColumns, swapColumn, deleteColumn } from "@/services/projects";
@@ -28,7 +28,7 @@ interface Props {
   projectId: string;
 }
 
-/* swap helper */
+/* swap helper - used to change the id of 2 columns*/
 function swapColumnsInState(
   columns: Column[],
   idA: string,
@@ -46,7 +46,7 @@ function swapColumnsInState(
   });
 }
 
-/* sortable wrapper */
+/* sortable wrapper - used to wrap columnCard (pass props and dragHandleProps ) */
 function SortableColumnCard({
   column,
   onEdit,
@@ -58,12 +58,15 @@ function SortableColumnCard({
 }) {
   const { setNodeRef, attributes, listeners, transform, transition } =
     useSortable({ id: column.id });
-
+  // style: the css when drag and drop (transform + transition)
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
-
+  // setNodeRef: tell dnd this DOM is target (position, hit, css)
+  // dragHandleProps - props send to the header of a column.
+  // attributes: DOM situationa & attributes
+  // listeners: drag and drop event
   return (
     <div ref={setNodeRef} style={style}>
       <ColumnCard
@@ -80,15 +83,12 @@ function SortableColumnCard({
 }
 
 export default function ColumnBoard({ projectId }: Props) {
+  // Source of truth:
+  // Raw columns data from backend.
+  // This is the ONLY writable columns state.
   const [columns, setColumns] = useState<Column[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const columnDialogRef = useRef<ColumnDialogRef | null>(null);
-
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 5 },
-    }),
-  );
 
   const fetchAndSetColumns = useCallback(async () => {
     try {
@@ -114,7 +114,17 @@ export default function ColumnBoard({ projectId }: Props) {
     [fetchAndSetColumns],
   );
 
-  /* ✅ drag end = swap */
+  // dnd part
+  // 1. set up sensors (in Dndcontext)
+  // device and action to sense
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 5 },
+    }),
+  );
+  // 2. handle drop action: frontend setup new order (swapColumnsInState) -> api call
+  // active: column being dragged
+  // over: mouse-touched column when you drop active column.
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -122,23 +132,32 @@ export default function ColumnBoard({ projectId }: Props) {
     const fromId = active.id as string;
     const toId = over.id as string;
 
-    // optimistic
+    // step 1
+    // optimistic update - immediately change the UI ( by sortedColumsn below)
     setColumns((prev) => swapColumnsInState(prev, fromId, toId));
 
+    // step 2
+    // change backend according to updated frontend domain info.
     try {
       await swapColumn(projectId, {
         ids: [fromId, toId],
       });
     } catch {
-      // rollback
+      // rollback - in case backend could not changed accordingly.
       setColumns((prev) => swapColumnsInState(prev, fromId, toId));
     }
   };
 
+  // 3. once columns changed, columns auto render again.
+  // View model (read-only derived data from 'columns' )for rendering & dnd.
+  // Used for rendering and interaction only.
+  // DO NOT mutate or setState based on this directly
+  const sortedColumns = useMemo(
+    () => [...columns].sort((a, b) => a.order - b.order),
+    [columns],
+  );
+
   if (isLoading) return null;
-
-  const sortedColumns = [...columns].sort((a, b) => a.order - b.order);
-
   return (
     <div className="w-full">
       <div className="mb-4 flex justify-between items-center">
@@ -150,12 +169,25 @@ export default function ColumnBoard({ projectId }: Props) {
       </div>
 
       {/* ✅ DND */}
+      {/* DndContext - 
+      1.listen to mouse 
+      2.which (active) element you drag 
+      3.which (over) element you drop the active element 
+      sensors: listen to drag and drop
+      collisionDetection: closestCenter (which item's center is closest, pick it as over.id)
+      onDragEnd: when to setColumns*/}
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
+        {/* SortableContext - 
+        1. which is re-order-able.
+        items: index used for order (must same as useSortable({ id: column.id }'s id))
+        strategy: how other columns move.*/}
         <SortableContext
+          // IMPORTANT:
+          // items order MUST match render order
           items={sortedColumns.map((c) => c.id)}
           strategy={horizontalListSortingStrategy}
         >
@@ -172,16 +204,6 @@ export default function ColumnBoard({ projectId }: Props) {
         </SortableContext>
       </DndContext>
 
-      {/* <div className="flex gap-4 overflow-x-auto">
-        {columns.map((column) => (
-          <ColumnCard
-            key={column.id}
-            column={column}
-            onEdit={() => columnDialogRef.current?.open(column)}
-            onDelete={() => handleDeleteColumn(column.id)}
-          />
-        ))}
-      </div> */}
       <ColumnDialog
         ref={columnDialogRef}
         projectId={projectId}

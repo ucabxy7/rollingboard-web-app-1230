@@ -5,6 +5,7 @@ import Cross from "@/public/svgs/cross.svg";
 import { Column } from "@/models/columns";
 import { useTranslations } from "next-intl";
 
+/* columnCard do not know dnd-kit, just put props on header div to make sure header draggable.*/
 interface ColumnCardProps {
   column: Column;
   onDelete?: () => void;
@@ -35,10 +36,6 @@ export default function ColumnCard({
       >
         <Cross className="text-white size-4" />
       </button>
-
-      {/* Header */}
-      {/* <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-white font-semibold">{column.name}</h3> */}
       <div
         className="mb-3 flex items-center justify-between cursor-grab active:cursor-grabbing"
         {...dragHandleProps}
