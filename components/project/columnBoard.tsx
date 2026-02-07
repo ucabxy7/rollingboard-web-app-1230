@@ -3,12 +3,21 @@
 import { useCallback, useEffect, useRef, useMemo, useState } from "react";
 import { Button } from "@/components/shared/button";
 import PlusSignIcon from "@/public/svgs/plus-sign.svg";
-import { fetchColumns, swapColumn, deleteColumn } from "@/services/projects";
+import {
+  fetchColumns,
+  swapColumn,
+  deleteColumn,
+  fetchProjectMemberships,
+} from "@/services/projects";
 import { Column } from "@/models/columns";
 import ColumnCard from "@/components/project/columnCard";
 import ColumnDialog, {
   ColumnDialogRef,
 } from "@/components/project/columnDialog";
+import TaskDialog, { TaskDialogRef } from "@/components/task/taskDialog";
+import { ProjectMember } from "@/models/tasks";
+import { Membership } from "@/models/memberships";
+import TaskBoard from "@/components/task/taskBoard";
 import {
   DndContext,
   closestCenter,
@@ -51,10 +60,12 @@ function SortableColumnCard({
   column,
   onEdit,
   onDelete,
+  children,
 }: {
   column: Column;
   onEdit: () => void;
   onDelete: () => void;
+  children?: React.ReactNode;
 }) {
   const { setNodeRef, attributes, listeners, transform, transition } =
     useSortable({ id: column.id });
@@ -77,9 +88,20 @@ function SortableColumnCard({
           ...attributes,
           ...listeners,
         }}
-      />
+      >
+        {children}
+      </ColumnCard>
     </div>
   );
+}
+
+export function mapMembershipsToProjectMembers(
+  memberships: Membership[],
+): ProjectMember[] {
+  return memberships.map((m) => ({
+    id: m.user.id, // userId
+    name: m.user.username,
+  }));
 }
 
 export default function ColumnBoard({ projectId }: Props) {
@@ -89,30 +111,45 @@ export default function ColumnBoard({ projectId }: Props) {
   const [columns, setColumns] = useState<Column[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const columnDialogRef = useRef<ColumnDialogRef | null>(null);
+  const taskDialogRef = useRef<TaskDialogRef>(null);
+  const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
+  const [members, setMembers] = useState<ProjectMember[]>([]);
 
-  const fetchAndSetColumns = useCallback(async () => {
+  const fetchInitialData = useCallback(async () => {
     try {
-      const data = await fetchColumns(projectId);
-      setColumns(data);
-      setIsLoading(false);
+      setIsLoading(true);
+      const [columnsData, memberships] = await Promise.all([
+        fetchColumns(projectId),
+        fetchProjectMemberships(projectId),
+      ]);
+
+      setColumns(columnsData);
+      setMembers(mapMembershipsToProjectMembers(memberships));
     } catch (error) {
-      // TODO: Bugsnag notify error
       console.error(error);
+      // TODO: Bugsnag
+    } finally {
+      setIsLoading(false);
     }
   }, [projectId]);
 
   useEffect(() => {
-    /* eslint-disable react-hooks/set-state-in-effect */
-    fetchAndSetColumns();
-  }, [fetchAndSetColumns]);
+    fetchInitialData();
+  }, [fetchInitialData]);
 
+  // remember soft delete tasks when column is delete in future.
   const handleDeleteColumn = useCallback(
     async (columnId: string) => {
       await deleteColumn(columnId);
-      fetchAndSetColumns();
+      fetchInitialData();
     },
-    [fetchAndSetColumns],
+    [fetchInitialData],
   );
+
+  const handleTaskSuccess = useCallback(() => {
+    // future：only refresh tasks
+    fetchInitialData();
+  }, [fetchInitialData]);
 
   // dnd part
   // 1. set up sensors (in Dndcontext)
@@ -193,22 +230,40 @@ export default function ColumnBoard({ projectId }: Props) {
         >
           <div className="flex gap-4 overflow-x-auto">
             {sortedColumns.map((column) => (
-              <SortableColumnCard
-                key={column.id}
-                column={column}
-                onEdit={() => columnDialogRef.current?.open(column)}
-                onDelete={() => handleDeleteColumn(column.id)}
-              />
+              <div key={column.id}>
+                <SortableColumnCard
+                  column={column}
+                  onEdit={() => columnDialogRef.current?.open(column)}
+                  onDelete={() => handleDeleteColumn(column.id)}
+                >
+                  <TaskBoard
+                    columnId={column.id}
+                    onAddTask={() => {
+                      setActiveColumnId(column.id);
+                      taskDialogRef.current?.open();
+                    }}
+                    onEditTask={(task) => {
+                      setActiveColumnId(column.id);
+                      taskDialogRef.current?.open(task);
+                    }}
+                  />
+                </SortableColumnCard>
+              </div>
             ))}
           </div>
         </SortableContext>
       </DndContext>
-
+      <TaskDialog
+        ref={taskDialogRef}
+        columnId={activeColumnId ?? ""}
+        members={members}
+        onSuccess={handleTaskSuccess}
+      />
       <ColumnDialog
         ref={columnDialogRef}
         projectId={projectId}
         columns={columns}
-        onSuccess={fetchAndSetColumns}
+        onSuccess={fetchInitialData}
       />
     </div>
   );

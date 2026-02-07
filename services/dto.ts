@@ -11,3 +11,16 @@ export interface UpdateColumnInput {
 export interface SwapColumnInput {
   ids: [string, string];
 }
+// tasks
+export interface CreateTaskInput {
+  name: string;
+  description: string;
+  columnId: string;
+  assignedToId?: string;
+}
+export interface UpdateTaskInput {
+  name?: string;
+  description?: string;
+  columnId?: string;
+  assignedToId?: string;
+}

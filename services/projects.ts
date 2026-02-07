@@ -1,12 +1,21 @@
 import { ProjectFormData } from "@/models/projects";
-import { ColumnFormData } from "@/models/columns";
+import { Column, ColumnFormData } from "@/models/columns";
+import { Task, TaskFormData } from "@/models/tasks";
 import { getCommonHeaders, handleApiResponse } from "./base";
 import { Project } from "@/models/projects";
 import { Pagination } from "@/models/pagination";
 import { Membership } from "@/models/memberships";
-import { Column } from "@/models/columns";
-import { CreateColumnInput, UpdateColumnInput, SwapColumnInput } from "./dto";
+import { TaskApiResponse } from "@/models/tasks";
+
+import {
+  CreateColumnInput,
+  UpdateColumnInput,
+  SwapColumnInput,
+  CreateTaskInput,
+  UpdateTaskInput,
+} from "./dto";
 import { promises } from "dns";
+import { json } from "zod";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -187,4 +196,32 @@ export const deleteColumn = async (columnId: string) => {
     await fetch(url, { headers, method: "DELETE" }),
   );
   return response;
+};
+// task section
+// 1. create a task under a column
+export const createTask = async (input: CreateTaskInput) => {
+  const headers = await getCommonHeaders();
+  const url = `${API_URL}/task`;
+  const response = await handleApiResponse<{ task: TaskApiResponse }>(
+    await fetch(url, { headers, method: "POST", body: JSON.stringify(input) }),
+  );
+  return response!.task;
+};
+// 2.1 udpate a task (except position in column)
+export const updateTask = async (taskId: string, input: UpdateTaskInput) => {
+  const headers = await getCommonHeaders();
+  const url = `${API_URL}/task/${taskId}`;
+  const response = await handleApiResponse<{ task: TaskApiResponse }>(
+    await fetch(url, { headers, method: "PATCH", body: JSON.stringify(input) }),
+  );
+  return response!.task;
+};
+// getTasks
+export const getTasksByColumn = async (columnId: string) => {
+  const headers = await getCommonHeaders();
+  const url = `${API_URL}/column/${columnId}/tasks`;
+  const response = await handleApiResponse<{ tasks: TaskApiResponse[] }>(
+    await fetch(url, { headers }),
+  );
+  return response!.tasks;
 };

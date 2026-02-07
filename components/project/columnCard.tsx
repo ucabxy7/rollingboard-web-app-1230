@@ -10,6 +10,8 @@ interface ColumnCardProps {
   column: Column;
   onDelete?: () => void;
   onEdit?: () => void;
+  onAddTask?: () => void; // ✅ 新增
+  children?: React.ReactNode;
   dragHandleProps?: React.HTMLAttributes<HTMLDivElement>;
 }
 
@@ -17,6 +19,8 @@ export default function ColumnCard({
   column,
   onDelete,
   onEdit,
+  onAddTask,
+  children,
   dragHandleProps,
 }: ColumnCardProps) {
   const t = useTranslations();
@@ -54,11 +58,24 @@ export default function ColumnCard({
       </div>
 
       {/* Body – task placeholder */}
-      <div className="flex-1 space-y-2 text-sm text-gray-4">
-        <div className="rounded-lg border border-dashed border-white/10 p-3 text-center">
-          Tasks will appear here
-        </div>
+      {/* ✅ Body – Tasks */}
+      <div className="flex-1 space-y-2">
+        {children ?? (
+          <div className="rounded-lg border border-dashed border-white/10 p-3 text-center text-sm text-gray-4">
+            Tasks will appear here
+          </div>
+        )}
       </div>
+
+      {/* ✅ Footer – Add Task */}
+      {onAddTask && (
+        <button
+          onClick={onAddTask}
+          className="mt-3 text-sm text-gray-4 hover:text-white"
+        >
+          + Add Task
+        </button>
+      )}
     </div>
   );
 }
