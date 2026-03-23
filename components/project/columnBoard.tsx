@@ -32,6 +32,7 @@ import {
   horizontalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   projectId: string;
@@ -114,6 +115,10 @@ export default function ColumnBoard({ projectId }: Props) {
   const taskDialogRef = useRef<TaskDialogRef>(null);
   const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
   const [members, setMembers] = useState<ProjectMember[]>([]);
+  // Trigger a task refetch (via TaskDialog onSuccess) without refetching columns.
+  // Start as null so TaskBoard doesn't immediately "refresh" on initial mount.
+  const [taskRefreshCounter, setTaskRefreshCounter] = useState<number | null>(null);
+  console.log("ColumnBoard render");
 
   const fetchInitialData = useCallback(async () => {
     try {
@@ -137,6 +142,13 @@ export default function ColumnBoard({ projectId }: Props) {
     fetchInitialData();
   }, [fetchInitialData]);
 
+  useEffect(() => {
+    console.log(`${projectId}'s ColumnBoard mounted`);
+    return () => {
+      console.log(`${projectId}'s ColumnBoard unmounted`);
+    };
+  }, []);
+
   // remember soft delete tasks when column is delete in future.
   const handleDeleteColumn = useCallback(
     async (columnId: string) => {
@@ -147,9 +159,9 @@ export default function ColumnBoard({ projectId }: Props) {
   );
 
   const handleTaskSuccess = useCallback(() => {
-    // future：only refresh tasks
-    fetchInitialData();
-  }, [fetchInitialData]);
+    // Refresh only tasks for the column whose dialog was submitted.
+    setTaskRefreshCounter((c) => (c === null ? 1 : c + 1));
+  }, []);
 
   // dnd part
   // 1. set up sensors (in Dndcontext)
@@ -194,7 +206,7 @@ export default function ColumnBoard({ projectId }: Props) {
     [columns],
   );
 
-  if (isLoading) return null;
+  // if (isLoading) return null;
   return (
     <div className="w-full">
       <div className="mb-4 flex justify-between items-center">
@@ -238,12 +250,20 @@ export default function ColumnBoard({ projectId }: Props) {
                 >
                   <TaskBoard
                     columnId={column.id}
+                    refreshToken={taskRefreshCounter ?? undefined}
+                    refreshColumnId={activeColumnId}
                     onAddTask={() => {
-                      setActiveColumnId(column.id);
+                      // Avoid changing state when re-opening the same column.
+                      setActiveColumnId((prev) =>
+                        prev === column.id ? prev : column.id,
+                      );
                       taskDialogRef.current?.open();
                     }}
                     onEditTask={(task) => {
-                      setActiveColumnId(column.id);
+                      // Avoid changing state when re-opening the same column.
+                      setActiveColumnId((prev) =>
+                        prev === column.id ? prev : column.id,
+                      );
                       taskDialogRef.current?.open(task);
                     }}
                   />
@@ -253,6 +273,13 @@ export default function ColumnBoard({ projectId }: Props) {
           </div>
         </SortableContext>
       </DndContext>
+      {/* ✅ Loading Overlay（加法，不影响存在性） */}
+      {isLoading && (
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-6 w-6 animate-spin text-white" />
+          <span className="text-sm text-white/80">Loading columns...</span>
+        </div>
+      )}
       <TaskDialog
         ref={taskDialogRef}
         columnId={activeColumnId ?? ""}

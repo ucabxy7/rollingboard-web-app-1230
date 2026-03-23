@@ -225,3 +225,12 @@ export const getTasksByColumn = async (columnId: string) => {
   );
   return response!.tasks;
 };
+// deleteTask
+export const deleteTask = async (taskId: string) => {
+  const headers = await getCommonHeaders();
+  const url = `${API_URL}/task/${taskId}`;
+  const response = await handleApiResponse<void>(
+    await fetch(url, { headers, method: "DELETE" }),
+  );
+  return response;
+};

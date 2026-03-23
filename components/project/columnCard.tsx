@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/shared/button";
-import Cross from "@/public/svgs/cross.svg";
+import { Pencil, X } from "lucide-react";
 import { Column } from "@/models/columns";
 import { useTranslations } from "next-intl";
 
@@ -33,28 +33,37 @@ export default function ColumnCard({
         border border-white/10 hover:border-white/30
         transition-all duration-200"
     >
-      {/* Delete */}
-      <button
-        className="absolute top-3 right-3 size-4 z-10 opacity-0 group-hover:opacity-100"
-        onClick={onDelete}
-      >
-        <Cross className="text-white size-4" />
-      </button>
       <div
         className="mb-3 flex items-center justify-between cursor-grab active:cursor-grabbing"
         {...dragHandleProps}
       >
         <h3 className="text-white font-semibold">{column.name}</h3>
-
-        {onEdit && (
-          <Button
-            variant="ghost"
-            onClick={onEdit}
-            className="opacity-0 group-hover:opacity-100"
-          >
-            {t("columnCard.edit")}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {onEdit && (
+            <Button
+              variant="ghost"
+              onClick={onEdit}
+              className="opacity-0 group-hover:opacity-100"
+              aria-label={t("columnCard.edit")}
+            >
+              <span className="inline-flex items-center gap-1">
+                {t("columnCard.edit")}
+                <Pencil className="size-4" />
+              </span>
+            </Button>
+          )}
+          {/* Delete */}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              title={t("columnCard.delete")}
+              className="size-4 text-gray-4 hover:text-red-400"
+              aria-label={t("columnCard.delete")}
+            >
+              <X className="size-4" />
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Body – task placeholder */}

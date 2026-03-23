@@ -149,7 +149,12 @@
     "addSelected":"Add Selected"
   },
   "columnCard":{
-    "edit":"Edit"
+    "edit":"Edit",
+    "delete":"Delete"
+  },
+  "taskCard":{
+    "edit":"Edit",
+    "delete":"Delete"
   },
   "copyright": "Copyright © 2025 The Rolling Board. All rights reserved."
 }

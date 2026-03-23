@@ -92,7 +92,6 @@ const TaskDialog = forwardRef<TaskDialogRef, TaskDialogProps>(
         if (editingTask) {
           // isChanged(any of : name, description, assignedToId)
           const changedFields = getChangedFields(data, editingTask);
-
           if (Object.keys(changedFields).length > 0) {
             await updateTask(editingTask.id, changedFields);
           }
