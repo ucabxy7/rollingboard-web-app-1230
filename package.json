@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
-    "prepare": "husky || true",
     "type-check": "npx tsc --noEmit",
     "pre-commit": "npx lint-staged --config lint-staged.config.js && npm run type-check"
   },
